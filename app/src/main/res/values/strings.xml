@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">ServicioTenico</string>
+    <string name="tv_text">Servicio Tecnico</string>
+    <string name="et_nombre">Nombre</string>
+    <string name="et_direccion">Direccion</string>
+    <string name="et_telefono">Telefono</string>
+    <string name="et_email" />
+    <string name="btn_guardar">Guardar</string>
+    <string name="btn_buscar">Buscar</string>
+    <string name="btn_editar">Editar</string>
+    <string name="btn_eliminar">Eliminar Cuenta</string>
+    <string name="btn_averia">Ver averias cliente</string>
+    <string name="et_marca">Marca</string>
+    <string name="et_sintoma">Sintoma</string>
+    <string name="et_solucion">Solucion</string>
+    <string name="et_coste">0.00</string>
+    <string name="et_precio">0.00</string>
+    <string name="et_estado">Pendiente</string>
+    <string name="et_fecha">YYYY-MM-DD</string>
+    <string name="btn_identificate">Identificate</string>
+    <string name="tv_registrate">¿No tienes cuenta? Registrate</string>
+    <string name="btn_login">Cerrar Sesion</string>
+    <string name="et_contrasena">Contraseña</string>
+    <string name="btn_volver">Volver</string>
+    <string name="tv_text2">Avería</string>
+    <string name="btn_guardar2">Guardar</string>
+    <string name="btn_buscarAveriaCliente">Buscar averias del cliente</string>
+    <string name="btn_editar2">Editar</string>
+    <string name="btn_eliminar2">Eliminar</string>
+    <string name="btn_nuevo">Nuevo cliente</string>
+    <string name="tv_nombre">Nombre</string>
+    <string name="tv_telefono">Telefono</string>
+    <string name="btn_nuevaAveria">Nueva Averia</string>
+    <string name="tv_historial">Historial de Averías</string>
+    <string name="tv_administrador"></string>
+    <string name="tv_texto_Admin"></string>
+    <string name="tv_seleccion">Seleccione una averia</string>
+    <string name="btn_editarAveria">Editar Averia</string>
+    <string name="btn_buscaAveriaPendiente">Buscar averias pendientes</string>
+    <string name="btn_volverAtras">Volver</string>
+    <string name="iconoUsuario">Icono usuario</string>
+    <string name="btn_volver_mostrarCliente">Volver</string>
+    <string name="btn_crearAveria">Nueva averia</string>
+    <string name="btn_averiasPendientes">Ver averias pendientes</string>
+    <string name="btn_llamar">Llamar</string>
+
+</resources>

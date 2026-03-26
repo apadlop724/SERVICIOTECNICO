@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/tv_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/iconoUsuario"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:contentDescription="@string/iconoUsuario"
+                android:onClick="mostrarCliente"
+                app:srcCompat="@mipmap/usuario" />
+
+            <ImageButton
+                android:id="@+id/iconoAdmin"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                app:srcCompat="@mipmap/admin" />
+
+            <TextView
+                android:id="@+id/tv_bienbenida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/tv_administrador"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_historial" />
+
+            <ImageButton
+                android:id="@+id/imageAplicacion"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                app:srcCompat="@mipmap/icono" />
+
+            <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/tv_texto_Admin"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_nombre2" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_nombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/et_nombre"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_direccion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/et_direccion"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_telefono"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/et_telefono"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Email" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/et_contrasena"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/et_contrasena"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_identificate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="clickIdentificate"
+                    android:text="@string/btn_identificate"
+                    app:icon="@drawable/clienteidentificate"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_registrate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:onClick="clickRegistrate"
+                    android:text="@string/tv_registrate"
+                    android:textColor="#3248C3"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_nuevo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="nuevoCliente"
+                    android:text="@string/btn_nuevo"
+                    app:icon="@drawable/clientenuevo"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_guardar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="insertarCliente"
+                    android:text="@string/btn_guardar"
+                    app:icon="@drawable/clienteguardar"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_buscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="buscarCliente"
+                    android:text="@string/btn_buscar"
+                    app:icon="@drawable/clientebuscar"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_editar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="editarCliente"
+                    android:text="@string/btn_editar"
+                    app:icon="@drawable/clienteeditar"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_eliminar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="eliminarCliente"
+                    android:text="@string/btn_eliminar"
+                    app:icon="@drawable/clienteeliminar"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_crearAveria"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="irANuevaAveria"
+                    android:text="@string/btn_crearAveria"
+                    app:icon="@drawable/averianueva"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+
+                <Button
+                    android:id="@+id/btn_averia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="irAAverias"
+                    android:text="@string/btn_averia"
+                    app:icon="@drawable/averiascliente"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+
+                <Button
+                    android:id="@+id/btn_averiasPendientes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="verAveriasPendientes"
+                    android:text="@string/btn_averiasPendientes"
+                    app:icon="@drawable/averiaspendiente"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+
+                <Button
+                    android:id="@+id/btn_llamar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="llamarCliente"
+                    android:text="@string/btn_llamar"
+                    app:icon="@drawable/clientellamar"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="volverLogin"
+                    android:text="@string/btn_login"
+                    app:icon="@drawable/clientecerrarsesion"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+
+                <Button
+                    android:id="@+id/btn_volver_mostrarCliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="ocultar_cliente"
+                    android:text="@string/btn_volver_mostrarCliente"
+                    app:icon="@drawable/clientevolver"
+                    app:iconPadding="1dp"
+                    app:iconSize="30dp"
+                    app:iconTint="@null" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
