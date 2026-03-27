@@ -381,7 +381,7 @@ $conexion->close();
 ?>
 ```
 
-### 9. Listar Pendientes (`listar_pendientes.php`)
+### 9. Listar averias Pendientes (`listar_pendientes.php`)
 ```php
 <?php
 include 'config.php';
@@ -405,7 +405,7 @@ mysqli_close($conexion);
 ?>
 ```
 
-### 10. Listar averias de un cliente(`listar_averias.php`)
+### 10. Listar averias de un cliente (`listar_averias.php`)
 ```php
 <?php
 include 'config.php';
