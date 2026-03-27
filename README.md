@@ -77,7 +77,7 @@ CREATE TABLE averia (
 
 Estos scripts deben alojarse en el directorio `dbst/` de tu servidor. 
 
-### 1. Conexión (`conexion.php`)
+### 1. Conexión (`config.php`)
 Esencial para que todos los demás scripts funcionen.
 ```php
 <?php
@@ -85,9 +85,14 @@ $hostname = "tu_host";
 $database = "tu_db";
 $username = "tu_usuario";
 $password = "tu_password";
-$conexion = new mysqli($hostname, $username, $password, $database);
-if ($conexion->connect_errno) {
-    echo "Error de conexion";
+// Configurar mysqli para que lance excepciones en caso de error (PHP 8+)
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+try {
+    $conexion = new mysqli($hostname, $username, $password, $database);
+    $conexion->set_charset("utf8");
+} catch (mysqli_sql_exception $e) {
+    die("Fallo al conectar a MySQL: " . $e->getMessage());
 }
 ?>
 ```
@@ -95,102 +100,334 @@ if ($conexion->connect_errno) {
 ### 2. Insertar Cliente (`insertar_cliente.php`)
 ```php
 <?php
-include 'conexion.php';
+include 'config.php';
+
 $nombre = $_POST['nombre'];
 $direccion = $_POST['direccion'];
 $telefono = $_POST['telefono'];
 $email = $_POST['email'];
 $contrasena = $_POST['contrasena'];
 
-$consulta_existente = "SELECT * FROM cliente WHERE telefono='$telefono'";
-$resultado = $conexion->query($consulta_existente);
+// Verificamos que el teléfono no esté vacío
+if(empty($telefono)){
+    echo "El telefono es obligatorio";
+    exit();
+}
 
-if($resultado->num_rows > 0){
-    echo "El telefono ya esta registrado";
+$consulta = "INSERT INTO cliente (nombre, direccion, telefono, email, contrasena) VALUES (?, ?, ?, ?, ?)";
+$stmt = $conexion->prepare($consulta);
+
+if (!$stmt) {
+    echo "Error en la consulta SQL: " . $conexion->error;
+    exit();
+}
+
+$stmt->bind_param("sssss", $nombre, $direccion, $telefono, $email, $contrasena);
+
+if ($stmt->execute()) {
+    echo "Operacion exitosa";
 } else {
-    $consulta = "INSERT INTO cliente (nombre, direccion, telefono, email, contrasena) VALUES ('$nombre', '$direccion', '$telefono', '$email', '$contrasena')";
-    if($conexion->query($consulta)){
-        echo "Operacion exitosa";
+    // Si el error es 1062, significa que el teléfono ya existe
+    if ($stmt->errno == 1062) {
+        echo "El telefono ya esta registrado";
+    } else {
+        echo "Error al insertar cliente";
     }
 }
+
+$stmt->close();
+$conexion->close();
 ?>
 ```
 
 ### 3. Buscar Cliente (`buscar_cliente.php`)
 ```php
 <?php
-include 'conexion.php';
+include 'config.php';
+
+// Recogemos el teléfono de la URL
 $telefono = $_GET['telefono'];
-$consulta = "SELECT * FROM cliente WHERE telefono = '$telefono'";
-$resultado = $conexion->query($consulta);
-while($fila = $resultado->fetch_array()){
-    $cliente[] = array_map('utf8_encode', $fila);
+
+// Buscamos solo al cliente que coincida con ese teléfono
+//$consulta = "SELECT * FROM cliente WHERE telefono = ?";
+
+// Buscamos el cliente y los datos de su última avería (si existe)
+$consulta = "SELECT c.*, a.id_averia, a.electrodomestico, a.marca, a.sintoma, a.solucion, a.coste, a.precio, a.estado, a.fecha 
+             FROM cliente c 
+             LEFT JOIN averia a ON c.id_cliente = a.id_cliente 
+             WHERE c.telefono = ? 
+             ORDER BY a.id_averia DESC LIMIT 1";
+
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("s", $telefono);
+$stmt->execute();
+
+$resultado = $stmt->get_result();
+
+$cliente = array();
+while ($fila = $resultado->fetch_assoc()) {
+    $cliente[] = $fila;
 }
+
+// Enviamos el resultado a Android
 echo json_encode($cliente);
-$resultado->close();
+
+$stmt->close();
+$conexion->close();
+?>
+```
+### 4. Actualizar cliente (`editar_cliente.php`)
+```php
+<?php
+include 'config.php';
+
+// Recibimos los datos de Android
+$telefono_antiguo = $_POST['telefono_antiguo'];
+$telefono_nuevo = $_POST['telefono_nuevo'];
+$nombre = $_POST['nombre'];
+$direccion = $_POST['direccion'];
+$email = $_POST['email'];
+$contrasena = $_POST['contrasena']; 
+
+// Validar si el telefono nuevo ya existe (solo si es diferente al antiguo)
+if ($telefono_nuevo != $telefono_antiguo) {
+    $checkQuery = "SELECT id_cliente FROM cliente WHERE telefono = ?";
+    $stmtCheck = $conexion->prepare($checkQuery);
+    $stmtCheck->bind_param("s", $telefono_nuevo);
+    $stmtCheck->execute();
+    $stmtCheck->store_result();
+    if ($stmtCheck->num_rows > 0) {
+        echo "El telefono ya existe";
+        $stmtCheck->close();
+        exit();
+    }
+    $stmtCheck->close();
+}
+
+// SQL: Actualizamos los datos buscando por el teléfono antiguo, y actualizamos también el teléfono
+$consulta = "UPDATE cliente SET nombre=?, direccion=?, email=?, contrasena=?, telefono=? WHERE telefono=?";
+$stmt = $conexion->prepare($consulta);
+
+if (!$stmt) {
+    echo "Error en la consulta SQL: " . $conexion->error;
+    exit();
+}
+
+$stmt->bind_param("ssssss", $nombre, $direccion, $email, $contrasena, $telefono_nuevo, $telefono_antiguo);
+
+if ($stmt->execute()) {
+// Verificamos si realmente se encontró el teléfono y se editó algo
+    if ($stmt->affected_rows > 0) {
+        echo "Cliente editado";
+    } else {
+        echo "No se realizaron cambios o el telefono no existe";
+    }
+} else {
+    echo "Error al procesar la edicion";
+}
+$stmt->close();
+$conexion->close();
 ?>
 ```
 
-### 4. Insertar Avería (`insertar_averia.php`)
+### 5. Eliminar cliente (`eliminar_cliente.php`)
 ```php
 <?php
-include 'conexion.php';
+include 'config.php';
+
+$telefono = $_POST['telefono'];
+
+if (empty($telefono)) {
+    echo "Debe proporcionar un telefono";
+    exit();
+}
+
+// Preparamos la eliminación
+$consulta = "DELETE FROM cliente WHERE telefono = ?";
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("s", $telefono);
+
+if ($stmt->execute()) {
+    // Verificamos si realmente se borró algo (si el teléfono existía)
+    if ($stmt->affected_rows > 0) {
+        echo "Cliente eliminado";
+    } else {
+        echo "No se encontró ningún cliente con ese telefono";
+    }
+} else {
+    echo "Error al intentar eliminar el cliente";
+}
+
+$stmt->close();
+$conexion->close();
+?>
+```
+
+
+
+### 6. Insertar Avería (`insertar_averia.php`)
+```php
+<?php
+include 'config.php';
+
+// Validación en el servidor
+if(!isset($_POST['id_cliente']) || !isset($_POST['sintoma'])){
+    echo "Error: Datos insuficientes para el registro";
+    exit;
+}
+
 $id_cliente = $_POST['id_cliente'];
-$electrodomestico = $_POST['electrodomestico'];
+$electro = $_POST['electrodomestico'];
 $marca = $_POST['marca'];
 $sintoma = $_POST['sintoma'];
 $fecha = $_POST['fecha'];
-$estado = $_POST['estado'];
 
-// Opcionales (Admin)
-$solucion = isset($_POST['solucion']) ? $_POST['solucion'] : "";
-$coste = isset($_POST['coste']) ? $_POST['coste'] : 0;
-$precio = isset($_POST['precio']) ? $_POST['precio'] : 0;
+// Si el admin no envió estos datos, asignamos valores seguros
+$solucion = $_POST['solucion'] ?? "";
+$coste = $_POST['coste'] ?? 0.0;
+$precio = $_POST['precio'] ?? 0.0;
+$estado = $_POST['estado'] ?? "Pendiente";
 
-$consulta = "INSERT INTO averia (id_cliente, electrodomestico, marca, sintoma, fecha, estado, solucion, coste, precio) 
-             VALUES ('$id_cliente', '$electrodomestico', '$marca', '$sintoma', '$fecha', '$estado', '$solucion', '$coste', '$precio')";
-
-if($conexion->query($consulta)){
-    echo "Avería registrada correctamente";
+if(!empty($fecha)){
+    // Si la fecha tiene 10 caracteres (AAAA-MM-DD), le añadimos la hora
+    if(strlen($fecha) == 10){
+        $fecha = $fecha . " 00:00:00";
+    }
+} else {
+    // Si viene vacía, ponemos la fecha y hora actual del servidor
+    $fecha = date("Y-m-d H:i:s");
 }
+
+
+$consulta = "INSERT INTO averia (id_cliente, electrodomestico, marca, sintoma, solucion, coste, precio, estado, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conexion->prepare($consulta);
+$stmt->bind_param("issssddss", $id_cliente, $electro, $marca, $sintoma, $solucion, $coste, $precio, $estado, $fecha);
+
+if ($stmt->execute()) {
+    echo "Registro de averia exitoso";
+} else {
+    echo "Error de base de datos: " . $stmt->error;
+}
+
+$stmt->close();
+$conexion->close();
 ?>
 ```
 
-### 5. Actualizar Avería (`actualizar_averia.php`)
+### 7. Actualizar Avería (`actualizar_averia.php`)
 ```php
 <?php
-include 'conexion.php';
+include 'config.php';
+
+// Recogemos los datos enviados por POST
 $id_averia = $_POST['id_averia'];
-$electrodomestico = $_POST['electrodomestico'];
-$marca = $_POST['marca'];
-$sintoma = $_POST['sintoma'];
-$solucion = $_POST['solucion'];
-$estado = $_POST['estado'];
-$coste = $_POST['coste'];
-$precio = $_POST['precio'];
-$fecha = $_POST['fecha'];
+$electro   = $_POST['electrodomestico'];
+$marca     = $_POST['marca'];
+$sintoma   = $_POST['sintoma'];
+$solucion  = $_POST['solucion'];
+$estado    = $_POST['estado'];
+$coste     = $_POST['coste'];
+$precio    = $_POST['precio'];
+$fecha     = $_POST['fecha'];
 
-$consulta = "UPDATE averia SET electrodomestico='$electrodomestico', marca='$marca', sintoma='$sintoma', 
-             solucion='$solucion', estado='$estado', coste='$coste', precio='$precio', fecha='$fecha' 
-             WHERE id_averia='$id_averia'";
+// Preparamos la consulta de actualización
+$sql = "UPDATE averia SET 
+        electrodomestico = ?, 
+        marca = ?, 
+        sintoma = ?, 
+        solucion = ?, 
+        estado = ?, 
+        coste = ?, 
+        precio = ?, 
+        fecha = ? 
+        WHERE id_averia = ?";
 
-if($conexion->query($consulta)){
+$stmt = $conexion->prepare($sql);
+
+// "sssssddsi" indica los tipos: s (string), d (double/decimal), i (integer)
+$stmt->bind_param("sssssddsi", $electro, $marca, $sintoma, $solucion, $estado, $coste, $precio, $fecha, $id_averia);
+
+if ($stmt->execute()) {
     echo "Actualizado";
+} else {
+    echo "Error: " . $stmt->error;
 }
+
+$stmt->close();
+$conexion->close();
+?>
+```
+### 8. Eliminar averia (`eliminar_averia.php`)
+```php
+<?php
+include 'config.php';
+
+$id_averia = $_POST['id_averia'];
+
+// Preparamos el borrado
+$sql = "DELETE FROM averia WHERE id_averia = ?";
+
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("i", $id_averia);
+
+if ($stmt->execute()) {
+    echo "Eliminado";
+} else {
+    echo "Error al eliminar";
+}
+
+$stmt->close();
+$conexion->close();
 ?>
 ```
 
-### 6. Listar Pendientes (`listar_pendientes.php`)
+### 9. Listar Pendientes (`listar_pendientes.php`)
 ```php
 <?php
-include 'conexion.php';
-$consulta = "SELECT a.*, c.nombre, c.telefono FROM averia a INNER JOIN cliente c ON a.id_cliente = c.id_cliente WHERE a.estado = 'Pendiente' ORDER BY a.fecha ASC";
-$resultado = $conexion->query($consulta);
+include 'config.php';
+
+// Consulta global: buscamos por estado, no por cliente
+$consulta = "SELECT a.*, c.id_cliente, c.nombre, c.telefono 
+             FROM averia a 
+             INNER JOIN cliente c ON a.id_cliente = c.id_cliente 
+             WHERE a.estado = 'Pendiente' 
+             ORDER BY a.fecha ASC"; // ASC para ver las más antiguas primero
+
+$resultado = mysqli_query($conexion, $consulta);
+
+$pendientes = array();
+while($fila = mysqli_fetch_assoc($resultado)){
+    $pendientes[] = $fila;
+}
+
+echo json_encode($pendientes);
+mysqli_close($conexion);
+?>
+```
+
+### 10. Listar averias de un cliente(`listar_averias.php`)
+```php
+<?php
+include 'config.php';
+$id_cliente = $_GET['id_cliente'];
+
+// $consulta = "SELECT id_averia, fecha, electrodomestico, estado, marca, sintoma, solucion, coste, precio FROM averia WHERE id_cliente = '$id_cliente' ORDER BY fecha DESC";
+
+$consulta = "SELECT a.*, c.id_cliente, c.nombre, c.telefono 
+             FROM averia a 
+             INNER JOIN cliente c ON a.id_cliente = c.id_cliente 
+             WHERE a.id_cliente = '$id_cliente' 
+             ORDER BY a.fecha DESC";
+
+$resultado = mysqli_query($conexion, $consulta);
+
 $averias = array();
-while($fila = $resultado->fetch_assoc()){
+while($fila = mysqli_fetch_assoc($resultado)){
     $averias[] = $fila;
 }
+
 echo json_encode($averias);
+mysqli_close($conexion);
 ?>
 ```
 
