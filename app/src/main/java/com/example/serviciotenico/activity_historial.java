@@ -40,6 +40,7 @@ public class activity_historial extends AppCompatActivity {
     private String telefonoClienteSeleccionado = null;
 
 
+    // Inicializa la actividad, configura la interfaz y decide qué historial cargar (cliente o pendientes)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +83,7 @@ public class activity_historial extends AppCompatActivity {
     }
 
 
+    // Recupera todos los datos enviados por el Intent para poder navegar hacia atrás sin perder información
     private void obtenerParaVolverAtras(){
         //cliente
         //si esta en esta pagina es administrador
@@ -108,6 +110,7 @@ public class activity_historial extends AppCompatActivity {
     }
 
 
+    // Consulta al servidor todas las averías asociadas a un ID de cliente específico
     private void obtenerHistorial(String id_cliente, String nombre, String telefono) {
         tv_nombre2.setText(nombre);
         tv_telefono2.setText(telefono);
@@ -158,6 +161,7 @@ public class activity_historial extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonArrayRequest);
     }
 
+    // Consulta al servidor la lista global de todas las averías que están en estado "Pendiente"
     private void obtenerHistorialPendientes() {
         tv_nombre2.setText("");
         tv_telefono2.setText("");
@@ -223,6 +227,7 @@ public class activity_historial extends AppCompatActivity {
     }
 
 
+    // Configura el comportamiento visual y la muestra de detalles rápidos al tocar un elemento de la lista
     private  void mostrarSeleccion(){
 
         lv_historial.setOnItemClickListener((parent, view, position, id) -> {
@@ -287,12 +292,14 @@ public class activity_historial extends AppCompatActivity {
     }
 
 
+    // Muestra un aviso al usuario para indicarle cómo editar una avería
     public void DetallesAveriaLista(View view) {
         Detalles();
         Toast.makeText(this, "Vuelva a seleccionar la averia para editarla", Toast.LENGTH_SHORT).show();
     }
 
 
+    // Configura el clic en la lista para navegar a AveriaActivity con los datos de la avería seleccionada
     private void Detalles() {
 
         lv_historial.setOnItemClickListener((parent, view, position, id) -> {
@@ -347,6 +354,7 @@ public class activity_historial extends AppCompatActivity {
         });
     }
 
+    // Finaliza la actividad actual y regresa a la pantalla principal (MainActivity)
     public void volver(View view){
         // CAMBIO: El botón volver del historial regresa al MAIN
         Intent intent = new Intent(this, MainActivity.class);
@@ -363,6 +371,7 @@ public class activity_historial extends AppCompatActivity {
         finish();
     }
 
+    // Prepara un objeto Intent con la información necesaria para que la siguiente pantalla sepa cómo regresar
     private void datosVolverAtras(Intent intent){
         //cliente
 

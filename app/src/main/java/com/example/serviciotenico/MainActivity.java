@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         //FIN VUELTA
     }
 
+    // Realiza una petición POST para registrar un nuevo cliente en el servidor
     public void insertarCliente(View view) {
         if (!validarCampos()) return;
 
@@ -181,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Comprueba que los campos del perfil de cliente sean válidos (email, teléfono de 9 dígitos, etc.)
     private boolean validarCampos() {
         String nombre = et_nombre.getText().toString().trim();
         String direccion = et_direccion.getText().toString().trim();
@@ -265,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Busca un cliente en el servidor y rellena los campos de la interfaz con la información obtenida
     public void buscarCliente(View view) {
         String telefono = et_telefono.getText().toString().trim();
 
@@ -322,6 +325,8 @@ public class MainActivity extends AppCompatActivity {
                         btn_llamar.setVisibility(View.VISIBLE);
                         if (admin) {
                             btn_llamar.setText("Llamar al cliente");
+                             btn_volver_mostrarCliente.setText("Buscar otro cliente");
+                            btn_login.setText("Cerrar sesion");
                         }
                         tv_info.setVisibility(View.GONE);
                         
@@ -356,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Envía los datos editados del cliente al servidor para actualizar su perfil
     public void editarCliente(View view) {
         if (!validarCampos()) return;
 
@@ -413,6 +419,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Muestra un diálogo de confirmación y solicita la eliminación de la cuenta del cliente
     public void eliminarCliente(View view) {
 
         // 1. Crear el cuadro de diálogo de confirmación
@@ -472,6 +479,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    // Borra el contenido de todos los campos de texto relacionados con el cliente
     private void limpiarFormulario(){
         et_nombre.setText("");
         et_direccion.setText("");
@@ -483,6 +491,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // Navega a la actividad de historial para ver las averías del cliente actual
     public void irAAverias(View view) {
         if (idRecuperado == null || datosClienteGlobal == null) {
             Toast.makeText(this, "Primero debe identificarse", Toast.LENGTH_LONG).show();
@@ -512,6 +521,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    // Cambia la visibilidad de los elementos de la interfaz según si se está en login o en formulario
     private void mostrarCampos(boolean mostrar) {
         int visibilidad = mostrar ? View.VISIBLE : View.GONE;
         int estadoInverso = mostrar ? View.GONE : View.VISIBLE;
@@ -544,6 +554,7 @@ public class MainActivity extends AppCompatActivity {
         tv_info.setText("Login");
     }
 
+    // Configura la interfaz para que el usuario pueda introducir sus credenciales
     private void mostrarLogin(){
         limpiarFormulario();
         imageAplicacion.setVisibility(View.VISIBLE);
@@ -577,6 +588,7 @@ public class MainActivity extends AppCompatActivity {
         tv_info.setText("Login");
     }
 
+    // Muestra el formulario vacío para que un nuevo usuario se registre
     private void mostrarRegistro(){
         limpiarFormulario();
         imageAplicacion.setVisibility(View.GONE);
@@ -605,16 +617,18 @@ public class MainActivity extends AppCompatActivity {
         btn_buscar.setVisibility(View.GONE);
         btn_nuevo.setVisibility(View.GONE);
         btn_llamar.setVisibility(View.GONE);
-        btn_login.setText("Ir Login");
+        btn_login.setText("Volver al login");
         tv_info.setText("Registro");
     }
 
+    // Maneja el clic en el enlace de registro
     public void clickRegistrate(View view) {
         limpiarFormulario();
         mostrarRegistro();
     }
 
 
+    // Resetea el estado administrativo y muestra la pantalla de login
     public void volverLogin(View view) {
         limpiarFormulario();
         admin = false;
@@ -622,6 +636,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Prepara la interfaz para que el administrador cree un cliente nuevo manualmente
     public void nuevoCliente(View view){
         btn_guardar.setVisibility(View.VISIBLE);
         et_nombre.setText("");
@@ -643,6 +658,7 @@ public class MainActivity extends AppCompatActivity {
         btn_averia.setVisibility(View.GONE);
         btn_login.setVisibility(View.VISIBLE);
         btn_volver_mostrarCliente.setVisibility(View.VISIBLE);
+        btn_volver_mostrarCliente.setText("Volver");
         btn_averiasPendientes.setVisibility(View.GONE);
         btn_llamar.setVisibility(View.GONE);
         tv_info.setVisibility(View.GONE);
@@ -652,6 +668,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Configura la vista principal con las opciones exclusivas de administrador
     private void mostrarAdmin(){
         et_telefono.setVisibility(View.VISIBLE);
         et_telefono.setEnabled(true);
@@ -663,6 +680,7 @@ public class MainActivity extends AppCompatActivity {
         btn_buscar.setVisibility(View.VISIBLE);
         btn_nuevo.setVisibility(View.VISIBLE);
         btn_login.setVisibility(View.VISIBLE);
+        btn_login.setText("Cerrar sesion");
         btn_averiasPendientes.setVisibility(View.VISIBLE);
         btn_crearAveria.setVisibility(View.GONE);
         btn_llamar.setVisibility(View.GONE);
@@ -685,6 +703,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Navega al formulario para crear un nuevo reporte de avería para el cliente identificado
     public void irANuevaAveria(View view) {
         if (idRecuperado == null || datosClienteGlobal == null) {
             Toast.makeText(this, "Primero debe identificarse", Toast.LENGTH_LONG).show();
@@ -715,6 +734,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Navega al historial filtrado para ver todas las averías pendientes del sistema
     public void verAveriasPendientes(View view) {
         if (!admin) {
             Toast.makeText(this, "Acceso solo para administradores", Toast.LENGTH_SHORT).show();
@@ -730,6 +750,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // Valida las credenciales introducidas contra los datos de administrador o la base de datos de clientes
     public void clickIdentificate(View view) {
         admin = false;
         String tel = et_telefono.getText().toString();
@@ -822,6 +843,7 @@ public class MainActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(request);
     }
 
+    // Oculta los elementos de login una vez que el usuario ha accedido correctamente
     private void ocultarLogin(){
         et_telefono.setVisibility(View.GONE);
         et_contrasena.setVisibility(View.GONE);
@@ -837,6 +859,7 @@ public class MainActivity extends AppCompatActivity {
         tv_info.setText("");
     }
 
+    // Oculta el detalle de los datos del cliente para volver a la vista de botones de acción
     public void ocultar_cliente(View view){
         if(admin){
             mostrarAdmin();
@@ -860,7 +883,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Rellena y muestra los campos del perfil del cliente en la pantalla
     public void mostrarCliente(View view){
+        // Si el usuario pulsa su icono y los campos ya son visibles, los ocultamos (Toggle)
+        if (view != null && et_nombre.getVisibility() == View.VISIBLE) {
+            ocultar_cliente(view);
+            return;
+        }
+
         try{
             et_nombre.setText(datosClienteGlobal.getString("nombre"));
             et_direccion.setText(datosClienteGlobal.getString("direccion"));
@@ -890,7 +920,8 @@ public class MainActivity extends AppCompatActivity {
             btn_eliminar.setVisibility(View.VISIBLE);
             btn_averia.setVisibility(View.GONE);
             btn_login.setVisibility(View.VISIBLE);
-            btn_volver_mostrarCliente.setVisibility(View.VISIBLE);
+            btn_volver_mostrarCliente.setVisibility(View.GONE);
+            btn_volver_mostrarCliente.setText("Volver");
             btn_crearAveria.setVisibility(View.GONE);
             btn_llamar.setVisibility(View.VISIBLE);
             btn_llamar.setText("Llamar al técnico");
@@ -905,6 +936,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Inicia una llamada telefónica al cliente (si es admin) o al servicio técnico (si es cliente)
     public void llamarCliente(View view) {
         String telefono;
         if (admin) {

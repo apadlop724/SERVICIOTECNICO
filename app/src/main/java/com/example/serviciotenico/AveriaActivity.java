@@ -60,6 +60,7 @@ public class AveriaActivity extends AppCompatActivity {
     private Button btn_buscarAveriaCliente, btn_volver;
 
 
+    // Configura la actividad, inicializa componentes y carga los datos de la avería o cliente recibidos
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,6 +208,7 @@ public class AveriaActivity extends AppCompatActivity {
         }
     }
 
+    // Gestiona qué campos son editables y visibles según el rol (Admin/Cliente) y el estado de la avería
     private void configurarPantalla(boolean admin, String estado) {
         // Si no es admin, ocultamos campos de dinero/solución
         int visibilidadAdmin = admin ? View.VISIBLE : View.GONE;
@@ -252,6 +254,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Selecciona automáticamente la opción correcta en el desplegable de electrodomésticos
     private void seleccionarEnSpinner(Spinner spinner, String valor) {
         if (valor == null) return;
         for (int i = 0; i < spinner.getCount(); i++) {
@@ -262,6 +265,7 @@ public class AveriaActivity extends AppCompatActivity {
         }
     }
 
+    // Abre un diálogo de calendario para seleccionar la fecha de la avería
     private void mostrarCalendario() {
         Calendar calendar = Calendar.getInstance();
         
@@ -290,6 +294,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Resetea todos los campos del formulario para permitir la creación de un nuevo registro
     public void nuevaAveria(){
         esnuevaAveria = true;
         spinnerElectro.setSelection(0);
@@ -309,6 +314,7 @@ public class AveriaActivity extends AppCompatActivity {
         btn_eliminar2.setEnabled(false);
     }
 
+    // Envía los datos del formulario al servidor para registrar una avería nueva en la base de datos
     public void insertarAveria(View view) {
 
         if (!validarCamposAveria()) {
@@ -367,6 +373,7 @@ public class AveriaActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    // Verifica que los datos obligatorios estén rellenos y tengan el formato correcto antes de guardar
     private boolean validarCamposAveria() {
         // 1. Obtener valores
         String marca = et_marca.getText().toString().trim();
@@ -427,6 +434,7 @@ public class AveriaActivity extends AppCompatActivity {
         return true; // Todo correcto
     }
 
+    // Navega a la pantalla de historial filtrando por el cliente actual
     public void buscarAveriasCliente() {
         
             Intent intent = new Intent(this, activity_historial.class);
@@ -448,6 +456,7 @@ public class AveriaActivity extends AppCompatActivity {
 
 
 
+    // Prepara un Intent con los datos de navegación para mantener el estado al retroceder
     private void datosVolverAtras(Intent intent){
         //cliente
         //si va a listar averias es administrador
@@ -472,6 +481,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Envía una petición al servidor para actualizar la información de una avería existente
     public void actualizarAveria(View view) {
         if (!validarCamposAveria()) {
             return; // Si algo falla, el método se detiene aquí
@@ -512,6 +522,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Muestra confirmación y solicita al servidor borrar permanentemente el registro de la avería
     public void eliminarAveria(View view) {
         // 1. Crear alerta de confirmación
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -551,6 +562,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Limpia el contenido de todos los campos de texto y resetea el estado a "Pendiente"
     private void limpiarFormularioAveria() {
         spinnerElectro.setSelection(0); // Vuelve a "Seleccione aparato..."
         et_marca.setText("");
@@ -564,6 +576,7 @@ public class AveriaActivity extends AppCompatActivity {
     }
 
 
+    // Gestiona el retorno a la pantalla anterior dependiendo de dónde venga el usuario
     public void volver(View view) {
 
         boolean vueltaHistorial = getIntent().getBooleanExtra("vueltaHistorial", false);
@@ -584,6 +597,7 @@ public class AveriaActivity extends AppCompatActivity {
         }
     }
 
+    // Regresa a la pantalla principal de la aplicación enviando los datos de sesión
     public void volverAUsuario() {
 
 
